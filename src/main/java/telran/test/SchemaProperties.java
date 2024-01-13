@@ -1,4 +1,7 @@
-package telran.reflect;
+package telran.test;
+
+import telran.reflect.Id;
+import telran.reflect.Index;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
