@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Properties;
 
 public class Configuration {
@@ -38,17 +39,14 @@ public class Configuration {
 
     private Object getValue(String value, String typeName) {
         String[] tokens = value.split(":");
+        String val = properties.getProperty(tokens[0]);
 
-        if (tokens.length < 2)
+        if (tokens.length < 2 && Objects.isNull(val))
             throw new IllegalArgumentException("default value is missing");
-
-        String propertyName = tokens[0];
-        String defaultValue = tokens[1];
-        String val = properties.getProperty(propertyName, defaultValue);
 
         try {
             Method method = getClass().getDeclaredMethod(typeName + "Convertion", String.class);
-            return method.invoke(this, val);
+            return method.invoke(this, val == null ? tokens[1] : val);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
