@@ -11,13 +11,12 @@ import java.util.Properties;
 public class Configuration {
     private static final String DEFAULT_CONFIG_FILE = "application.properties";
     Object configObject;
+    Properties properties;
 
     public Configuration(Object configObj, String configFile) throws Exception {
         this.configObject = configObj;
-
-//        Properties properties = new Properties();
-//        properties.load(new FileInputStream(configFile));
-//        String value = properties.getProperty("propertyName", "defaultValue");
+        properties = new Properties();
+        properties.load(new FileInputStream(configFile));
     }
 
     public Configuration(Object configObject) throws Exception {
@@ -39,12 +38,17 @@ public class Configuration {
 
     private Object getValue(String value, String typeName) {
         String[] tokens = value.split(":");
+
+        if (tokens.length < 2)
+            throw new IllegalArgumentException("default value is missing");
+
         String propertyName = tokens[0];
         String defaultValue = tokens[1];
+        String val = properties.getProperty(propertyName, defaultValue);
 
         try {
             Method method = getClass().getDeclaredMethod(typeName + "Convertion", String.class);
-            return method.invoke(this, defaultValue);
+            return method.invoke(this, val);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
